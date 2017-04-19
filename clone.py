@@ -1,6 +1,5 @@
 import csv
 import cv2
-import sklearn
 from sklearn.utils import shuffle
 from sklearn.model_selection import train_test_split
 
@@ -10,9 +9,6 @@ import matplotlib.pyplot as plt
 from keras.models import Sequential
 from keras.layers import Flatten, Dense, Lambda, Cropping2D
 from keras.layers.convolutional import Convolution2D
-
-def process_image(image_path):
-    return cv2.imread(image_path)
 
 samples = []
 car_images = []
@@ -45,7 +41,6 @@ def generator(samples, batch_size=32):
                 flipped = cv2.flip(center_image, 1)
                 images.append(flipped)
                 angles.append(-center_angle)
-                #cv2.imshow('image', flipped)
 
                 path = batch_sample[1]
                 left_image = cv2.imread(path)
@@ -99,7 +94,7 @@ model.compile(loss='mse', optimizer='adam')
 history_object = model.fit_generator(train_generator, samples_per_epoch=len(train_samples)/batch_size,
                                      validation_data=validation_generator,
                                      nb_val_samples=len(validation_samples)/batch_size, nb_epoch=5, verbose=1)
-
+#print(model.summary())
 model.save('model.h5', overwrite=True)
 print("Model Saved!")
 

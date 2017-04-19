@@ -11,13 +11,12 @@ The goals / steps of this project are the following:
 
 [//]: # (Image References)
 
-[image1]: ./examples/placeholder.png "Model Visualization"
-[image2]: ./examples/placeholder.png "Grayscaling"
-[image3]: ./examples/placeholder_small.png "Recovery Image"
-[image4]: ./examples/placeholder_small.png "Recovery Image"
-[image5]: ./examples/placeholder_small.png "Recovery Image"
-[image6]: ./examples/placeholder_small.png "Normal Image"
-[image7]: ./examples/placeholder_small.png "Flipped Image"
+[image2]: ./examples/center.png "Center Lane Driving"
+[image3]: ./examples/recovery1.png "Recovery Image"
+[image4]: ./examples/recovery2.png "Recovery Image"
+[image6]: ./examples/1img.jpg "Normal Image"
+[image7]: ./examples/1flipped.jpg "Flipped Image"
+[image8]: ./examples/loss.jpg "Loss"
 
 ## Rubric Points
 ###Here I will consider the [rubric points](https://review.udacity.com/#!/rubrics/432/view) individually and describe how I addressed each point in my implementation.  
@@ -31,7 +30,7 @@ My project includes the following files:
 * model.py containing the script to create and train the model
 * drive.py for driving the car in autonomous mode
 * model.h5 containing a trained convolution neural network 
-* writeup_report.md or writeup_report.pdf summarizing the results
+* writeup_report.md summarizing the results
 
 ####2. Submission includes functional code
 Using the Udacity provided simulator and my drive.py file, the car can be driven autonomously around the track by executing 
@@ -47,48 +46,15 @@ The model.py file contains the code for training and saving the convolution neur
 
 ####1. An appropriate model architecture has been employed
 
-My model consists of a convolution neural network with 3x3 filter sizes and depths between 32 and 128 (model.py lines 18-24) 
-
-The model includes RELU layers to introduce nonlinearity (code line 20), and the data is normalized in the model using a Keras lambda layer (code line 18). 
-
-____________________________________________________________________________________________________
-Layer (type)                     Output Shape          Param #     Connected to                     
-====================================================================================================
-lambda_1 (Lambda)                (None, 160, 320, 3)   0           lambda_input_1[0][0]             
-____________________________________________________________________________________________________
-cropping2d_1 (Cropping2D)        (None, 65, 320, 3)    0           lambda_1[0][0]                   
-____________________________________________________________________________________________________
-convolution2d_1 (Convolution2D)  (None, 31, 158, 24)   1824        cropping2d_1[0][0]               
-____________________________________________________________________________________________________
-convolution2d_2 (Convolution2D)  (None, 14, 77, 36)    21636       convolution2d_1[0][0]            
-____________________________________________________________________________________________________
-convolution2d_3 (Convolution2D)  (None, 5, 37, 48)     43248       convolution2d_2[0][0]            
-____________________________________________________________________________________________________
-convolution2d_4 (Convolution2D)  (None, 3, 35, 64)     27712       convolution2d_3[0][0]            
-____________________________________________________________________________________________________
-convolution2d_5 (Convolution2D)  (None, 1, 33, 64)     36928       convolution2d_4[0][0]            
-____________________________________________________________________________________________________
-flatten_1 (Flatten)              (None, 2112)          0           convolution2d_5[0][0]            
-____________________________________________________________________________________________________
-dense_1 (Dense)                  (None, 100)           211300      flatten_1[0][0]                  
-____________________________________________________________________________________________________
-dense_2 (Dense)                  (None, 50)            5050        dense_1[0][0]                    
-____________________________________________________________________________________________________
-dense_3 (Dense)                  (None, 10)            510         dense_2[0][0]                    
-____________________________________________________________________________________________________
-dense_4 (Dense)                  (None, 1)             11          dense_3[0][0]                    
-====================================================================================================
-Total params: 348,219
-Trainable params: 348,219
-Non-trainable params: 0
-____________________________________________________________________________________________________
+My model consists of a convolution neural network with 3x3 filter sizes and depths between 24 and 64 (model.py lines 18-24) 
+The model includes RELU layers to introduce nonlinearity (code line 83), and the data is normalized in the model using a Keras lambda layer (code line 81). 
 
 
 ####2. Attempts to reduce overfitting in the model
 
 The final model does not contain dropout layers, it was discarded after being tested and result in worse results than with the current model (model.py lines 21).
-
-The model was trained and validated on different data sets to ensure that the model was not overfitting (code line 10-16). The model was tested by running it through the simulator and ensuring that the vehicle could stay on the track.
+The model was trained and validated on different data sets to ensure that the model was not overfitting (code line 10-16). 
+The model was tested by running it through the simulator and ensuring that the vehicle could stay on the track.
 
 ####3. Model parameter tuning
 
@@ -96,8 +62,7 @@ The model used an adam optimizer, so the learning rate was not tuned manually (m
 
 ####4. Appropriate training data
 
-Training data was chosen to keep the vehicle driving on the road. I used a combination of center lane driving, recovering from the left and right sides of the road ... 
-
+Training data was chosen to keep the vehicle driving on the road. I used a combination of center lane driving, recovering from the left and right sides of the road, and driving in opposite direction of the track as a way to generalize and train the model for recovering scenarios.
 For details about how I created the training data, see the next section. 
 
 ###Model Architecture and Training Strategy
@@ -106,26 +71,37 @@ For details about how I created the training data, see the next section.
 
 The overall strategy for deriving a model architecture was based on the model suggested by Udacity.
 I tested more complex models, based on NVIDIA and other models, but I did not have better results or even had difficulty training due to lack of memory on my system.
-
-My first step was to use a convolution neural network model similar to the ... I thought this model might be appropriate because ...
-
-In order to gauge how well the model was working, I split my image and steering angle data into a training and validation set. I found that my first model had a low mean squared error on the training set but a high mean squared error on the validation set. This implied that the model was overfitting. 
-
-To combat the overfitting, I modified the model so that ...
-
-Then I ... 
-
-The final step was to run the simulator to see how well the car was driving around track one. There were a few spots where the vehicle fell off the track... to improve the driving behavior in these cases, I ....
-
+The beginning of the model crops the image to remove its sides and focus on the important information and avoid trees and the sky.
+In order to gauge how well the model was working, I split my image and steering angle data into a training and validation set.
+The final step was to run the simulator to see how well the car was driving around track one. There were very few spots where the vehicle start to fell off the track but was able to recovery. To improve the driving behavior in these cases, recovery situations were used as training data.
 At the end of the process, the vehicle is able to drive autonomously around the track without leaving the road.
 
 ####2. Final Model Architecture
 
-The final model architecture (model.py lines 18-24) consisted of a convolution neural network with the following layers and layer sizes ...
+The final model architecture (model.py lines 80-92) consisted of a convolution neural network with the following layers and layer sizes ...
 
-Here is a visualization of the architecture (note: visualizing the architecture is optional according to the project rubric)
+Here is a visualization of the architecture:
 
-![alt text][image1]
+|Layer (type)                     | Output Shape         | Param #    | Connected to                    |
+|                                 |     :---:            |  :---:     |           :---:                 |
+|lambda_1 (Lambda)                |(None, 160, 320, 3)   |0           |lambda_input_1[0][0]             |
+|cropping2d_1 (Cropping2D)        |(None, 65, 320, 3)    |0           |lambda_1[0][0]                   |
+|convolution2d_1 (Convolution2D)  |(None, 31, 158, 24)   |1824        |cropping2d_1[0][0]               |
+|convolution2d_2 (Convolution2D)  |(None, 14, 77, 36)    |21636       |convolution2d_1[0][0]            |
+|convolution2d_3 (Convolution2D)  |(None, 5, 37, 48)     |43248       |convolution2d_2[0][0]            |
+|convolution2d_4 (Convolution2D)  |(None, 3, 35, 64)     |27712       |convolution2d_3[0][0]            |
+|convolution2d_5 (Convolution2D)  |(None, 1, 33, 64)     |36928       |convolution2d_4[0][0]            |
+|flatten_1 (Flatten)              |(None, 2112)          |0           |convolution2d_5[0][0]            |
+|dense_1 (Dense)                  |(None, 100)           |211300      |flatten_1[0][0]                  |
+|dense_2 (Dense)                  |(None, 50)            |5050        |dense_1[0][0]                    |
+|dense_3 (Dense)                  |(None, 10)            |510         |dense_2[0][0]                    |
+|dense_4 (Dense)                  |(None, 1)             |11          |dense_3[0][0]                    |
+
+Total params: 348,219
+Trainable params: 348,219
+Non-trainable params: 0
+____________________________________________________________________________________________________
+
 
 ####3. Creation of the Training Set & Training Process
 
@@ -133,24 +109,20 @@ To capture good driving behavior, I first recorded two laps on track one using c
 
 ![alt text][image2]
 
-I then recorded the vehicle recovering from the left side and right sides of the road back to center so that the vehicle would learn to .... These images show what a recovery looks like starting from ... :
+I then recorded the vehicle recovering from the left side and right sides of the road back to center so that the vehicle would learn to deal with situations like these.
+These images show what a recovery looks like (left lane recovery):
 
 ![alt text][image3]
 ![alt text][image4]
-![alt text][image5]
 
-Then I repeated this process on track two in order to get more data points.
-
-To augment the data sat, I also flipped images and angles thinking that this would ... For example, here is an image that has then been flipped:
+To augment the data sat, I flipped images and angles thinking that this would improve de model and helps to generalize.
+For example, the original image and flipped one:
 
 ![alt text][image6]
 ![alt text][image7]
 
-Etc ....
-
-After the collection process, I had X number of data points. I then preprocessed this data by ...
-
-
+After the collection process, I had 13963 images file. Network used 41889 processeded images to train.
 I finally randomly shuffled the data set and put 20% of the data into a validation set. 
 
 I used this training data for training the model. The validation set helped determine if the model was over or under fitting. The ideal number of epochs was 10 as evidenced by the loss graph. I used an adam optimizer so that manually training the learning rate wasn't necessary.
+![alt text][image8]
