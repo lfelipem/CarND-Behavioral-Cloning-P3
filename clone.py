@@ -24,7 +24,7 @@ train_samples, validation_samples = train_test_split(samples, test_size=0.2)
 
 def generator(samples, batch_size=32):
     num_samples = len(samples)
-    while 1:  # Loop forever so the generator never terminates
+    while 1:
         shuffle(samples)
         for offset in range(0, num_samples, batch_size):
             batch_samples = samples[offset:offset + batch_size]
@@ -62,8 +62,6 @@ def generator(samples, batch_size=32):
                 images.append(flipped)
                 angles.append(-right_angle)
 
-
-            # trim image to only see section with road
             X_train = np.array(images)
             y_train = np.array(angles)
             yield shuffle(X_train, y_train)
