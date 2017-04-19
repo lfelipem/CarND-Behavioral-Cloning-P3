@@ -11,12 +11,12 @@ The goals / steps of this project are the following:
 
 [//]: # (Image References)
 
-[image2]: ./examples/center.png "Center Lane Driving"
-[image3]: ./examples/recovery1.png "Recovery Image"
-[image4]: ./examples/recovery2.png "Recovery Image"
+[image2]: ./examples/center.jpg "Center Lane Driving"
+[image3]: ./examples/recovery1.jpg "Recovery Image"
+[image4]: ./examples/recovery2.jpg "Recovery Image"
 [image6]: ./examples/1img.jpg "Normal Image"
 [image7]: ./examples/1flipped.jpg "Flipped Image"
-[image8]: ./examples/loss.jpg "Loss"
+[image8]: ./examples/loss.png "Loss"
 
 ## Rubric Points
 ###Here I will consider the [rubric points](https://review.udacity.com/#!/rubrics/432/view) individually and describe how I addressed each point in my implementation.  
@@ -83,7 +83,7 @@ The final model architecture (model.py lines 80-92) consisted of a convolution n
 Here is a visualization of the architecture:
 
 |Layer (type)                     | Output Shape         | Param #    | Connected to                    |
-|                                 |     :---:            |  :---:     |           :---:                 |
+|            :---:                |     :---:            |  :---:     |           :---:                 |
 |lambda_1 (Lambda)                |(None, 160, 320, 3)   |0           |lambda_input_1[0][0]             |
 |cropping2d_1 (Cropping2D)        |(None, 65, 320, 3)    |0           |lambda_1[0][0]                   |
 |convolution2d_1 (Convolution2D)  |(None, 31, 158, 24)   |1824        |cropping2d_1[0][0]               |
